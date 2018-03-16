@@ -1,3 +1,8 @@
 Rails.application.routes.draw do
-  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
+  namespace :v1 do
+    get '/analyser/:region/:realm/:name', to: 'analyser#show'
+    namespace :wow do
+      get '/realms/:id', to: 'realmlist#index'
+    end
+  end
 end
