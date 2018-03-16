@@ -12,6 +12,7 @@ gem 'rest-client'
 
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
+  gem 'minitest-reporters',       '1.1.14'
 end
 
 group :development do
