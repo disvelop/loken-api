@@ -17,7 +17,7 @@ module V1
         params[:name],
         player.log_type
       )
-      
+
       render json: player.analyse
     end
   end
