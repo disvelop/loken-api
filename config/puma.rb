@@ -6,7 +6,7 @@ environment ENV.fetch("RAILS_ENV") { "development" }
 
 workers ENV.fetch("WEB_CONCURRENCY") { 2 }
 
-rackup      DefaultRackup
+rackup DefaultRackup
 
 preload_app!
 

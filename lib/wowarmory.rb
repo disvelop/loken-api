@@ -71,7 +71,7 @@ module Wowarmory
     weapon_info.map { |s| s['rank'] }.reduce(0, :+) - 3
   end
 
-  def gearinformation(player)
+  def gear_information(player)
     gear_info = []
     player['items'].each do |k, v|
       next if %w[averageItemLevel averageItemLevelEquipped].include?(k)
@@ -84,6 +84,39 @@ module Wowarmory
       gear_info.push(item)
     end
     gear_info
+  end
+
+  def raid_progression(player)
+    valid_raid_ids = [
+      8638 # Antorus, the Burning Throne
+    ].freeze
+
+    normal_kills = 0
+    heroic_kills = 0
+    mythic_kills = 0
+
+    raid_progression = player['progression']['raids']
+    raid_progression.each_entry do |k|
+      next unless valid_raid_ids.any?(k['id'])
+      k['bosses'].each do |boss|
+        if boss['normalKills'].positive?
+          normal_kills += 1
+        end
+        if boss['heroicKills'].positive?
+          heroic_kills += 1
+        end
+        if boss['mythicKills'].positive?
+          mythic_kills += 1
+        end
+      end
+    end
+
+    progression = {
+      normal: normal_kills,
+      heroic: heroic_kills,
+      mythic: mythic_kills
+    }
+    progression
   end
 
   def realm_list(region = 'us')

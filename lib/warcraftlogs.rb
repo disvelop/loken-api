@@ -12,6 +12,20 @@ module Warcraftlogs
     JSON.parse(request)
   end
 
+  def parse_mythic(logs)
+    parse_logs(logs, 5).to_i
+  end
+
+  def parse_heroic(logs)
+    (parse_logs(logs, 4) * 0.55).to_i
+  end
+
+  def parse_normal(logs)
+    (parse_logs(logs, 3) * 0.10).to_i
+  end
+
+  private
+
   def parse_logs(logs, difficulty)
     total_percent = 0
     logs.each do |k|
@@ -27,15 +41,5 @@ module Warcraftlogs
     total_percent
   end
 
-  def parse_mythic(logs)
-    parse_logs(logs, 5).to_i
-  end
 
-  def parse_heroic(logs)
-    (parse_logs(logs, 4) * 0.55).to_i
-  end
-
-  def parse_normal(logs)
-    (parse_logs(logs, 3) * 0.10).to_i
-  end
 end

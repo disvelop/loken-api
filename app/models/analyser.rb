@@ -51,20 +51,24 @@ class Analyser
     {
       itemlevel: itemlevel(armory),
       weapon: artifact_weapon_level(armory),
-      gear: gearinformation(armory)
+      gear: gear_information(armory)
     }
   end
 
-  def logs_output
-    {
-      normal: parse_normal(logs),
-      heroic: parse_heroic(logs),
-      mythic: parse_mythic(logs)
-    }
+  def normal_logs
+    @normal_logs ||= parse_normal(logs)
+  end
+
+  def heroic_logs
+    @heroic_logs ||= parse_heroic(logs)
+  end
+
+  def mythic_logs
+    @mythic_logs ||= parse_mythic(logs)
   end
 
   def total_score
-    (parse_normal(logs) + parse_heroic(logs) + parse_mythic(logs) +
+    (normal_logs + heroic_logs + mythic_logs +
      itemlevel(armory) + artifact_weapon_level(armory))
   end
 
@@ -75,15 +79,22 @@ class Analyser
   end
 
   def details
-    
+    {
+      logs: {
+        normal: normal_logs,
+        heroic: heroic_logs,
+        mythic: mythic_logs
+      },
+      progression: raid_progression(armory) 
+    }
   end
 
   def score_output
     {
+      details: details,
       total_score: total_score,
       max_score: max_score.to_i,
-      rating: rating,
-      details: details
+      rating: rating
     }
   end
 end
