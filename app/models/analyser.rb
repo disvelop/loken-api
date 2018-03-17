@@ -19,7 +19,7 @@ class Analyser
     output = {
       character: character_output,
       gear: gear_output,
-      scores: score_output
+      rating: score_output
     }
     output
   end
@@ -68,10 +68,22 @@ class Analyser
      itemlevel(armory) + artifact_weapon_level(armory))
   end
 
+  def rating
+    increase = (max_score - total_score).to_f
+    percent = ((increase / max_score) * 100).to_f.round
+    (100 - percent)
+  end
+
+  def details
+    
+  end
+
   def score_output
     {
       total_score: total_score,
-      max_score: max_score.to_i
+      max_score: max_score.to_i,
+      rating: rating,
+      details: details
     }
   end
 end
