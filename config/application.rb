@@ -20,10 +20,14 @@ Bundler.require(*Rails.groups)
 module LokenApi
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
+
+    config.middleware.insert_after ActionDispatch::Static, Rack::Deflater
+    
     config.load_defaults 5.2
     config.api_only = true
 
     config.time_zone = 'Australia/Melbourne'
     config.eager_load_paths << Rails.root.join('lib')
+
   end
 end
