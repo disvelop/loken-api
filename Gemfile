@@ -10,6 +10,8 @@ gem 'rack-cors'
 
 gem 'rest-client'
 
+gem 'rack-brotli'
+
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
   gem 'minitest-reporters',       '1.1.14'
