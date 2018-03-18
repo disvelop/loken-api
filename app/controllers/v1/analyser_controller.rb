@@ -5,7 +5,7 @@ module V1
 
     def show
       player = Analyser.new
-
+      
       player.armory = character_data(params[:region],
                                      params[:realm], params[:name])
 

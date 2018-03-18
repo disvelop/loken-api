@@ -19,7 +19,7 @@ class Analyser
     output = {
       character: character_output,
       gear: gear_output,
-      rating: score_output
+      score: score_output
     }
     output
   end
@@ -55,21 +55,9 @@ class Analyser
     }
   end
 
-  def normal_logs
-    @normal_logs ||= parse_normal(logs)
-  end
-
-  def heroic_logs
-    @heroic_logs ||= parse_heroic(logs)
-  end
-
-  def mythic_logs
-    @mythic_logs ||= parse_mythic(logs)
-  end
-
   def total_score
-    (normal_logs + heroic_logs + mythic_logs +
-     itemlevel(armory) + artifact_weapon_level(armory))
+    (normal_logs(logs) + heroic_logs(logs) + mythic_logs(logs) +
+     itemlevel(armory) + artifact_weapon_level(armory) + raid_progression(armory).sum)
   end
 
   def rating
@@ -78,14 +66,36 @@ class Analyser
     (100 - percent)
   end
 
+  def progression
+    {
+      normal: normal_progression(armory),
+      heroic: heroic_progression(armory),
+      mythic: mythic_progression(armory),
+      total: raid_progression(armory).sum
+    }
+  end
+
+  def log
+    {
+      normal: normal_logs(logs),
+      heroic: heroic_logs(logs),
+      mythic: mythic_logs(logs),
+      total: normal_logs(logs) + heroic_logs(logs) + mythic_logs(logs)
+    }
+  end
+
+  def gear
+    {
+      ilvl: itemlevel(armory),
+      weapon: artifact_weapon_level(armory)
+    }
+  end
+
   def details
     {
-      logs: {
-        normal: normal_logs,
-        heroic: heroic_logs,
-        mythic: mythic_logs
-      },
-      progression: raid_progression(armory) 
+      logs: log,
+      progression: progression,
+      gear: gear
     }
   end
 

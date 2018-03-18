@@ -25,7 +25,7 @@ module Wowarmory
       return key['spec']['name'] if key['selected'] == true
     end
   end
-  
+
   def healer?(player)
     player_spec = player_spec_is(player)
     return true if %w[Holy Discipline Restoration Mistweaver].include?(player_spec)
@@ -63,7 +63,7 @@ module Wowarmory
   end
 
   def itemlevel(player)
-    player['items']['averageItemLevelEquipped'].to_i
+    @itemlevel ||= player['items']['averageItemLevelEquipped'].to_i
   end
 
   def artifact_weapon_level(player)
@@ -84,6 +84,18 @@ module Wowarmory
       gear_info.push(item)
     end
     gear_info
+  end
+
+  def normal_progression(player)
+    @normal_progression ||= raid_progression(player).first
+  end
+
+  def heroic_progression(player)
+    @heroic_progression ||= raid_progression(player).second
+  end
+
+  def mythic_progression(player)
+    @mythic_progression ||= raid_progression(player).last
   end
 
   def raid_progression(player)
@@ -110,13 +122,7 @@ module Wowarmory
         end
       end
     end
-
-    progression = {
-      normal: normal_kills,
-      heroic: heroic_kills,
-      mythic: mythic_kills
-    }
-    progression
+    [normal_kills, heroic_kills, mythic_kills]
   end
 
   def realm_list(region = 'us')

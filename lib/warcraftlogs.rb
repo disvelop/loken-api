@@ -6,22 +6,24 @@ module Warcraftlogs
   WCL_PARSES_API_END_POINT = 'parses/character/'.freeze
 
   def playerlogs_data(region, realm, name, role)
-    uri = "#{WCL_API_URL}#{WCL_PARSES_API_END_POINT}#{CGI.escape(name)}/#{CGI.escape(realm)}/#{region}?metric=#{role}&api_key=#{WCL_API_KEY}"
-    request = RestClient.get(uri) { |response, _request, _result| response }
-    return false unless request.code == 200
-    JSON.parse(request)
+    Rails.cache.fetch('armory_data', expires_in: 24.hours) do
+      uri = "#{WCL_API_URL}#{WCL_PARSES_API_END_POINT}#{CGI.escape(name)}/#{CGI.escape(realm)}/#{region}?metric=#{role}&api_key=#{WCL_API_KEY}"
+      request = RestClient.get(uri) { |response, _request, _result| response }
+      return false unless request.code == 200
+      JSON.parse(request)
+    end
   end
 
-  def parse_mythic(logs)
-    parse_logs(logs, 5).to_i
+  def normal_logs(logs)
+    @normal_logs ||= (parse_logs(logs, 3) * 0.10).to_i
   end
 
-  def parse_heroic(logs)
-    (parse_logs(logs, 4) * 0.55).to_i
+  def heroic_logs(logs)
+    @heroic_logs ||= (parse_logs(logs, 4) * 0.55).to_i
   end
 
-  def parse_normal(logs)
-    (parse_logs(logs, 3) * 0.10).to_i
+  def mythic_logs(logs)
+    @mythic_logs ||= parse_logs(logs, 5).to_i
   end
 
   private
