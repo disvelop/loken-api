@@ -8,12 +8,14 @@ class Analyser
   MAX_ILVL = 989
   MAX_RELIC = 15
   MAX_WEAPON = 101
+  NORMAL_DECREASE = 0.11
+  HEROIC_DECREASE = 0.55
   MYTHIC_PERCENTILE = 100 * 11
-  HEROIC_PERCENTILE = MYTHIC_PERCENTILE * 0.55
-  NORMAL_PERCENTILE = MYTHIC_PERCENTILE * 0.10
+  HEROIC_PERCENTILE = MYTHIC_PERCENTILE * HEROIC_DECREASE
+  NORMAL_PERCENTILE = MYTHIC_PERCENTILE * NORMAL_DECREASE
   MYTHIC_BOSS_KILLS = 11
-  HEROIC_BOSS_KILLS = MYTHIC_BOSS_KILLS * 0.55
-  NORMAL_BOSS_KILLS = MYTHIC_BOSS_KILLS * 0.10
+  HEROIC_BOSS_KILLS = MYTHIC_BOSS_KILLS * HEROIC_DECREASE
+  NORMAL_BOSS_KILLS = MYTHIC_BOSS_KILLS * NORMAL_DECREASE
 
   def analyse
     output = {
@@ -43,7 +45,7 @@ class Analyser
       spec: player_spec_is(armory),
       role: role(armory),
       avatar: avatar_link(armory),
-      background: background_link(armory),
+      background: background_link(armory)
     }
   end
 
@@ -56,8 +58,10 @@ class Analyser
   end
 
   def total_score
-    (normal_logs(logs) + heroic_logs(logs) + mythic_logs(logs) +
-     itemlevel(armory) + artifact_weapon_level(armory) + raid_progression(armory).sum)
+    itemlevel(armory) + artifact_weapon_level(armory) +
+      mythic_logs(armory) + (heroic_logs(armory) * HEROIC_DECREASE).to_i +
+      (normal_logs(armory) * NORMAL_DECREASE).to_i +
+      raid_progression(armory).sum
   end
 
   def rating
@@ -71,23 +75,24 @@ class Analyser
       normal: normal_progression(armory),
       heroic: heroic_progression(armory),
       mythic: mythic_progression(armory),
-      total: raid_progression(armory).sum
+      score: raid_progression(armory).sum
     }
   end
 
   def log
     {
-      normal: normal_logs(logs),
-      heroic: heroic_logs(logs),
-      mythic: mythic_logs(logs),
-      total: normal_logs(logs) + heroic_logs(logs) + mythic_logs(logs)
+      normal: normal_logs(logs) / normal_progression(armory),
+      heroic: heroic_logs(logs) / heroic_progression(armory),
+      mythic: mythic_logs(logs) / mythic_progression(armory),
+      score: normal_logs(logs) + heroic_logs(logs) + mythic_logs(logs)
     }
   end
 
   def gear
     {
       ilvl: itemlevel(armory),
-      weapon: artifact_weapon_level(armory)
+      weapon: artifact_weapon_level(armory),
+      score: itemlevel(armory) + artifact_weapon_level(armory)
     }
   end
 
@@ -104,7 +109,6 @@ class Analyser
       details: details,
       total_score: total_score,
       max_score: max_score.to_i,
-      rating: rating
     }
   end
 end
