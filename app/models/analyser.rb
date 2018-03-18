@@ -79,11 +79,21 @@ class Analyser
     }
   end
 
+  def logs_display(type)
+    if type == 'mythic'
+      mythic_progression(armory).positive? ? mythic_logs(logs) / mythic_progression(armory) : 0 
+    elsif type == 'heroic'
+      heroic_progression(armory).positive? ? heroic_logs(logs) / heroic_progression(armory) : 0 
+    else
+      normal_progression(armory).positive? ? normal_logs(logs) / normal_progression(armory) : 0 
+    end
+  end
+
   def log
     {
-      normal: normal_logs(logs) / normal_progression(armory),
-      heroic: heroic_logs(logs) / heroic_progression(armory),
-      mythic: mythic_logs(logs) / mythic_progression(armory),
+      normal: logs_display('normal'),
+      heroic: logs_display('heroic'),
+      mythic: logs_display('mythic'),
       score: normal_logs(logs) + heroic_logs(logs) + mythic_logs(logs)
     }
   end
@@ -108,7 +118,7 @@ class Analyser
     {
       details: details,
       total_score: total_score,
-      max_score: max_score.to_i,
+      max_score: max_score.to_i
     }
   end
 end
