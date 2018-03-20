@@ -8,13 +8,24 @@ module Wowarmory
 
   def character_data(region, realm, name)
     uri = "https://#{region}.api.battle.net/wow/character/#{CGI.escape(realm)}/#{CGI.escape(name)}?fields=items,progression,guild,achievements,talents&apikey=#{WOW_API_KEY}"
-    request = RestClient.get(uri) { |response, _request, _result| response }
-    if request.code != 200
-      puts "Requested URI #{uri}"
-      puts "HTTP Response: #{request.code}"
+
+    Typhoeus::Config.cache = Typhoeus::Cache::Rails.new
+    request = Typhoeus::Request.new(
+      uri,
+      method: :get,
+      followlocation: true,
+      accept_encoding: 'gzip'
+    )
+
+    request.on_complete do |response|
+      if response.success?
+        return JSON.parse(response.response_body)
+      else
+        # Received a non-successful http response.
+        return false
+      end
     end
-    return JSON.parse(request) if request.code == 200
-    false
+    request.run
   end
 
   def player_class_is(player)

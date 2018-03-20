@@ -9,6 +9,8 @@ gem 'bootsnap', '>= 1.1.0', require: false
 gem 'rack-cors'
 
 gem 'rest-client'
+gem 'typhoeus'
+gem 'oj'
 
 gem 'rack-brotli'
 

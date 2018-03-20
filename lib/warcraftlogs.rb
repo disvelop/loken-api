@@ -6,12 +6,25 @@ module Warcraftlogs
   WCL_PARSES_API_END_POINT = 'parses/character/'.freeze
 
   def playerlogs_data(region, realm, name, role)
-
       uri = "#{WCL_API_URL}#{WCL_PARSES_API_END_POINT}#{CGI.escape(name)}/#{CGI.escape(realm)}/#{region}?metric=#{role}&api_key=#{WCL_API_KEY}"
-      request = RestClient.get(uri) { |response, _request, _result| response }
-      return false unless request.code == 200
-      JSON.parse(request)
- 
+      # request = RestClient.get(uri) { |response, _request, _result| response }
+      # return false unless request.code == 200
+      Typhoeus::Config.cache = Typhoeus::Cache::Rails.new
+      request = Typhoeus::Request.new(
+        uri,
+        method: :get,
+        followlocation: true,
+        accept_encoding: 'gzip'
+      )
+
+      request.on_complete do |response|
+        if response.success?
+          return JSON.parse(response.response_body)
+        else
+          false
+        end
+      end
+      request.run
   end
 
   def normal_logs(logs)

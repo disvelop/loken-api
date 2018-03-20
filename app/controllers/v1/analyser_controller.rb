@@ -8,7 +8,7 @@ module V1
 
       player.armory = character_data(params[:region],
                                      params[:realm], params[:name])
-                               
+
       return render json: { status: 'user not found' }, status: 404 unless player.armory
 
       player.logs = playerlogs_data(
