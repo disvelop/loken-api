@@ -118,7 +118,8 @@ class Analyser
     {
       details: details,
       total_score: total_score,
-      max_score: max_score.to_i
+      max_score: max_score.to_i,
+      rating: rating
     }
   end
 end

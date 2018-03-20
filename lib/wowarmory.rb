@@ -9,6 +9,10 @@ module Wowarmory
   def character_data(region, realm, name)
     uri = "https://#{region}.api.battle.net/wow/character/#{CGI.escape(realm)}/#{CGI.escape(name)}?fields=items,progression,guild,achievements,talents&apikey=#{WOW_API_KEY}"
     request = RestClient.get(uri) { |response, _request, _result| response }
+    if request.code != 200
+      puts "Requested URI #{uri}"
+      puts "HTTP Response: #{request.code}"
+    end
     return JSON.parse(request) if request.code == 200
     false
   end
