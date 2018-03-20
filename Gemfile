@@ -7,12 +7,10 @@ gem 'puma', '~> 3.11'
 gem 'bootsnap', '>= 1.1.0', require: false
 
 gem 'rack-cors'
+gem 'rack-brotli'
 
-gem 'rest-client'
 gem 'typhoeus'
 gem 'oj'
-
-gem 'rack-brotli'
 
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]

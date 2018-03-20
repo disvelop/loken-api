@@ -1,4 +1,4 @@
-require 'rest-client'
+
 # Warcraftlogs api helper used to get parses
 module Warcraftlogs
   WCL_API_KEY = Rails.application.credentials.warcraftlogs_api_key
@@ -7,8 +7,6 @@ module Warcraftlogs
 
   def playerlogs_data(region, realm, name, role)
       uri = "#{WCL_API_URL}#{WCL_PARSES_API_END_POINT}#{CGI.escape(name)}/#{CGI.escape(realm)}/#{region}?metric=#{role}&api_key=#{WCL_API_KEY}"
-      # request = RestClient.get(uri) { |response, _request, _result| response }
-      # return false unless request.code == 200
       Typhoeus::Config.cache = Typhoeus::Cache::Rails.new
       request = Typhoeus::Request.new(
         uri,

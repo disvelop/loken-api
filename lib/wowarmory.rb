@@ -6,10 +6,11 @@ module Wowarmory
   API_URL = 'api.battle.net'.freeze
   REALMS_END_POINT = '/wow/realm/status'.freeze
 
+  Typhoeus::Config.cache = Typhoeus::Cache::Rails.new
+
   def character_data(region, realm, name)
     uri = "https://#{region}.api.battle.net/wow/character/#{CGI.escape(realm)}/#{CGI.escape(name)}?fields=items,progression,guild,achievements,talents&apikey=#{WOW_API_KEY}"
 
-    Typhoeus::Config.cache = Typhoeus::Cache::Rails.new
     request = Typhoeus::Request.new(
       uri,
       method: :get,
@@ -21,7 +22,6 @@ module Wowarmory
       if response.success?
         return JSON.parse(response.response_body)
       else
-        # Received a non-successful http response.
         return false
       end
     end
@@ -141,16 +141,30 @@ module Wowarmory
   end
 
   def realm_list(region = 'us')
-    request = RestClient.get("https://#{region}.#{API_URL}#{REALMS_END_POINT}?apikey=#{WOW_API_KEY}")
-    realms = JSON.parse(request)
-    realm_list = []
-    realms['realms'].each do |k|
-      realm = {
-        name: k['name'],
-        slug: k['slug']
-      }
-      realm_list.push(realm)
+    uri = ("https://#{region}.#{API_URL}#{REALMS_END_POINT}?apikey=#{WOW_API_KEY}")
+
+    request = Typhoeus::Request.new(
+      uri,
+      method: :get,
+      followlocation: true,
+      accept_encoding: 'gzip'
+    )
+    request.on_complete do |response|
+      if response.success?
+        realm_list = []
+        realms = JSON.parse(response.response_body)
+        realms['realms'].each do |k|
+          realm = {
+            name: k['name'],
+            slug: k['slug']
+          }
+          realm_list.push(realm)
+        end
+        return realm_list
+      else
+        return false
+      end
     end
-    realm_list
+    request.run
   end
 end
